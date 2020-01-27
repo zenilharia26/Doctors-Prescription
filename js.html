@@ -19,7 +19,7 @@
           var item = items[i];
           if (str.includes(item)){
               //call function for keyword+
-              return true;
+              return item;
         }
 
       }
@@ -42,10 +42,11 @@
           // console.log(transcript);
 
           console.log(flag);
-          if(ContainsAny(transcript,keywords) && flag==0) {
+          var x= ContainsAny(transcript,keywords); 
+          if(x && flag==0) {
             finalTranscript += '<i style="color:red;">' + transcript + '</i>';
-            recognizedkeyword = transcript;
-            console.log(recognizedkeyword);
+            recognizedkeyword = x;
+            console.log(x);
             
             flag=1;
           }
@@ -66,8 +67,10 @@
           else if (ContainsAny(transcript,["stop"])) {
             console.log("speech to "+speechtoappend);
             console.log("recognize"+recognizedkeyword);
-            console.log("getelement--"+document.getElementById(recognizedkeyword).value);
-            document.getElementById(recognizedkeyword).value = speechtoappend;
+            console.log(recognizedkeyword);
+            console.log("getelement--"+document.getElementById(recognizedkeyword));
+            var a=document.getElementById(recognizedkeyword);
+            a.value=speechtoappend;
             speechtoappend = "";
             flag=0;
           }
