@@ -4,6 +4,7 @@ app = Flask(__name__)
 import re
 import nltk
 from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize, sent_tokenize
 # nltk.download('stopwords')
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
@@ -11,14 +12,11 @@ from nltk.corpus import stopwords
 # nltk.download('words')
 
 stop = stopwords.words('english')
-
-string = """
-abcd123@gmail.com
-
-"""
+tags = ['name']
+string = "My name is Zenil Rajesh Haria"
 
 def extract_phone_numbers(string):
-    r = re.compile(r'(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4})')
+    r = re.compile(r'(\d{10})')
     phone_numbers = r.findall(string)
     return [re.sub(r'\D', '', number) for number in phone_numbers]
 
@@ -27,29 +25,28 @@ def extract_email_addresses(string):
     return r.findall(string)
 
 def ie_preprocess(document):
-    document = ' '.join([i for i in document.split() if i not in stop])
-    sentences = nltk.sent_tokenize(document)
-    sentences = [nltk.word_tokenize(sent) for sent in sentences]
-    sentences = [nltk.pos_tag(sent) for sent in sentences]
+    sentences = sent_tokenize(document)
     return sentences
 
 def extract_names(document):
     names = []
     sentences = ie_preprocess(document)
-    print(sentences)
-    for tagged_sentence in sentences:
-        for chunk in nltk.ne_chunk(tagged_sentence):
-            print(chunk)
-            if type(chunk) == nltk.tree.Tree:
-                if chunk.label() == 'PERSON':
-                    names.append(' '.join([c[0] for c in chunk]))
-    return names
+    for word in sentences:
+        word_list = nltk.word_tokenize(word)
+        word_list = [w for w in word_list if not w in stop]  
+        tagged = nltk.pos_tag(word_list)
+        for tag in tagged:
+            if tag[1] in ['NNS', 'NNP', 'NN'] and tag[0] not in tags:
+                names.append(tag[0])
+    print(names)
+    return names[0]
 
 
 @app.route('/name')
 def nameresolver():
     names = extract_names(string)
-    return "Hello World!"
+    print(names)
+    return names
 
 @app.route('/age')
 def ageresolver():
