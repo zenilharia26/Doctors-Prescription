@@ -1,15 +1,16 @@
-from flask import Flask
+from flask import Flask,render_template,jsonify,request
 app = Flask(__name__)
 
 import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
-# nltk.download('stopwords')
-# nltk.download('punkt')
-# nltk.download('averaged_perceptron_tagger')
-# nltk.download('maxent_ne_chunker')
-# nltk.download('words')
+
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('maxent_ne_chunker')
+nltk.download('words')
 
 stop = stopwords.words('english')
 tags = ['name']
@@ -42,11 +43,13 @@ def extract_names(document):
     return names[0]
 
 
-@app.route('/name')
+@app.route('/name', methods=['GET'])
 def nameresolver():
-    names = extract_names(string)
-    print(names)
-    return names
+	text = request.form['name']
+	names=extract_names(text)
+	print(names)
+	return names
+    
 
 @app.route('/age')
 def ageresolver():
@@ -69,7 +72,12 @@ def phoneresolver():
 def emailresolver():
     emails = extract_email_addresses(string)
     return emails[0]
-    
+ 
+@app.route('/')
+def basic():
+  	return(render_template('js.html')) 
+
+
 
 if __name__ == '__main__':
     app.debug = True
