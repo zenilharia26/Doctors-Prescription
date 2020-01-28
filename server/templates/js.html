@@ -15,6 +15,16 @@
   <br>Prescription:<input class="form-control" type="text" name="prescription" id="prescription" value="">
   <br>Advice:<input class="form-control" type="text" name="advice" id="advice" value="">
   <script>
+    var returnedval;
+    function setval(val) {
+      returnedval = val;
+    }
+    function loady(){
+    $.ajax({url: "http://localhost:5000/name", success: function(result){
+      var a=document.getElementById(recognizedkeyword);
+      a.value=result;
+    }});
+  };
     function ContainsAny(str, items){
       for(var i in items){
           var item = items[i];
@@ -71,12 +81,8 @@
             // console.log("recognize"+recognizedkeyword);
             // console.log(recognizedkeyword);
             // console.log("getelement--"+document.getElementById(recognizedkeyword));
-            $(document).ready(function(){
-    console.log("hii");
-    $.ajax({url: "/name",type:"GET", success: function(result){
-      console.log(result);
-    }});
-  });
+            loady();
+            console.log(returnedval);
             var a=document.getElementById(recognizedkeyword);
             a.value=speechtoappend;
             speechtoappend = "";
