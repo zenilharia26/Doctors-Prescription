@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Speech Recording</title>
+</head>
+<body>
+  <div></div>
+  Name:<input class="form-control" type="text" name="name" id="name" value="">
+  <br>Symptoms:<input class="form-control" type="text" name="symptoms" id="symptoms" value="">
+  <br>Diagnosis:<input class="form-control" type="text" name="diagnosis" id="diagnosis" value="">
+  <br>Prescription:<input class="form-control" type="text" name="prescription" id="prescription" value="">
+  <br>Advice:<input class="form-control" type="text" name="advice" id="advice" value="">
+  <script>
+    function ContainsAny(str, items){
+      for(var i in items){
+          var item = items[i];
+          if (str.includes(item)){
+              //call function for keyword+
+              return item;
+        }
+
+      }
+      return false;
+    }
+    var keywords=["name","symptoms","diagnosis","prescription","advice","submit"]
+    var speechtoappend = "";
+    window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+    let finalTranscript = '';
+    let recognition = new window.SpeechRecognition();
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 10;
+    recognition.continuous = true;
+    var flag=0;
+    recognition.onresult = (event) => {
+      let interimTranscript = '';
+      for (let i = event.resultIndex, len = event.results.length; i < len; i++) {
+        let transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          // console.log(transcript);
+
+          console.log(flag);
+          var x= ContainsAny(transcript,keywords); 
+          if(x && flag==0) {
+            finalTranscript += '<i style="color:red;">' + transcript + '</i>';
+            recognizedkeyword = x;
+            console.log(x);
+            
+            flag=1;
+          }
+          else if (flag==1 && !ContainsAny(transcript,["stop"])) {
+            function loadDoc() {
+              var xhttp = new XMLHttpRequest();
+              xhttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+                }
+              };
+              xhttp.open("GET", "http://localhost:5000/name", true);
+              xhttp.send();
+            }
+            finalTranscript += '<i style="color:blue;">' + transcript + '</i>';
+            speechtoappend+=transcript;
+          }
+          else if (ContainsAny(transcript,["stop"])) {
+            console.log("speech to "+speechtoappend);
+            console.log("recognize"+recognizedkeyword);
+            console.log(recognizedkeyword);
+            console.log("getelement--"+document.getElementById(recognizedkeyword));
+            var a=document.getElementById(recognizedkeyword);
+            a.value=speechtoappend;
+            speechtoappend = "";
+            flag=0;
+          }
+          else {
+            finalTranscript += transcript;
+          }
+          console.log(speechtoappend);
+          
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+      document.querySelector('div').innerHTML = finalTranscript + '<i style="color:#ddd;">' + interimTranscript + '</>';
+    }
+    recognition.start();
+  </script>
+</body>
+</html>
