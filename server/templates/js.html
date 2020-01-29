@@ -14,13 +14,14 @@
   <br>Diagnosis:<input class="form-control" type="text" name="diagnosis" id="diagnosis" value="">
   <br>Prescription:<input class="form-control" type="text" name="prescription" id="prescription" value="">
   <br>Advice:<input class="form-control" type="text" name="advice" id="advice" value="">
+  <br>Phone: <input class="form-control" type="number" name="phone" id="phone" minlength="10" maxlength="10" value=""> 
   <script>
     var returnedval;
     function setval(val) {
       returnedval = val;
     }
-    function loady(){
-    $.ajax({url: "http://localhost:5000/name", success: function(result){
+    function loady(speechtoappend){
+    $.ajax({url: "http://localhost:5000/extract",type: 'POST',data: {data: speechtoappend,type: recognizedkeyword}, success: function(result){
       var a=document.getElementById(recognizedkeyword);
       a.value=result;
     }});
@@ -36,7 +37,7 @@
       }
       return false;
     }
-    var keywords=["name","symptoms","diagnosis","prescription","advice","submit"]
+    var keywords=["name","symptoms","diagnosis","prescription","advice","submit","phone"]
     var speechtoappend = "";
     window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     let finalTranscript = '';
@@ -81,7 +82,7 @@
             // console.log("recognize"+recognizedkeyword);
             // console.log(recognizedkeyword);
             // console.log("getelement--"+document.getElementById(recognizedkeyword));
-            loady();
+            loady(speechtoappend);
             console.log(returnedval);
             var a=document.getElementById(recognizedkeyword);
             a.value=speechtoappend;

@@ -4,7 +4,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
 function loady(){
-    $.ajax({url: "http://localhost:5000/name", success: function(result){
+    $.ajax({url: "http://localhost:5000/name",data: {date: 'hey name Zenil Haria'}, success: function(result){
       $("#div1").html(result);
     }});
   }
