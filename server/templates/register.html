@@ -1,31 +1,56 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Signup Form</title>
-    <link rel="stylesheet" type="text/css"  href="{{ url_for('static', filename='css/main.css') }}">
-    <link href="https://fonts.googleapis.com/css?family=Comfortaa&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="signupbox">
-        <p style="font-size: 30px;">Signup</p>
-        <br>
-        <form action="/register" method="POST">
-            <p>Full Name</p>
-            <input type="text" name="namy" placeholder="Enter first name" required>     <!-- CHAR -->
-            <p>Phone No.</p>
-            <input type="text" name="contact" placeholder="Enter phone number" required>     <!-- CHAR -->
-            <p>Email</p>
-            <input type="email" name="email" placeholder="Enter email" required>      <!-- VARCHAR -->
-            <p>Password</p>
-            <input type="password" name="password" placeholder="Enter password" required> <br>  <!-- VARCHAR -->
-            <p>Certificate</p>
-            <input type="file" name="certificate" placeholder="Attach qualification certificate" required>
-            <br>
-            <br>
-            <input value="submit" name="submit" type="submit"/><br>
-            <a href="doctorlogin.html">Do you have an account?</a><br />
-            <a href="search.html">Help?</a>
-        </form>
-    </div>
-</body>
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta http-equiv="X-UA-Compatible" content="ie-edge"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+        crossorigin="anonymous"/>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+        <title>Index</title>
+    </head>
+    <body>
+        <h1 style="color: #0b0eb5; font-size: 50px;">Doctor's Hub</h1>
+        <br><br>
+        <div class="container" id="container">
+            <div class="form-container sign-up-container">
+                <form action="/register" method="POST">
+                    <h1>Create Account</h1>
+                    <input type="text" name="name" placeholder="Enter fullname" required />
+                    <input type="email" name="email" placeholder="Enter email" required />
+                    <input type="password" name="password" placeholder="Enter password" required/>
+                    <input type="number" name="contact" placeholder="Enter phone no." required/>
+                    
+                    <input value="SignUp" name="submit" type="submit"/>
+                </form>
+            </div>
+            <div class="form-container sign-in-container">
+                <form action="/validate" method="POST">
+                    <h1>Sign in</h1>
+                    <input type="email" name="email" placeholder="Enter email" required/>
+                    <input type="password" name="password" placeholder="Enter password" required />
+                    <input value="SignIn" name="submit" type="submit"/>
+                </form>
+            </div>
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h1>Welcome Back Doctor!</h1><br>
+                        If you have an account already..
+                        <p>To keep connected with us please login with your personal info</p>
+                        After Sign Up please Sign In to your account <br><br>
+                        <input type="submit" class="ghost" value="SignIn" name="submit" id="signIn" value="SIGNIN"/>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h1>Hello, Doctor!</h1><br>
+                        If you haven't signed up with us yet..
+                        <p>Enter your personal details and start your journey with us. </p>
+                        <input type="submit" class="ghost" value="SignUp" name="submit" id="signUp" value="SIGNUP"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="{{ url_for('static', filename='css/main.js') }}"></script>
+    </body>
 </html>

@@ -4,21 +4,25 @@
     <meta charset="UTF-8">
     <title>Homepage</title>
     <link href="https://fonts.googleapis.com/css?family=Comfortaa&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/main.css')}}">
     </head>
 <body>
     <div class="line2">
-        Welcome back Doctor!
+        Welcome back <p style='font-size:30px'> Dr. {{name}}</p>
     </div>
     <header class="header">
         <nav class="right_tokens1">
             &nbsp;
-            <a href="js.html" class="newpat1">New Patient</a>  &nbsp;
-            <a href="index.html" class="newpat1">Logout</a>  &nbsp;
+            <a href="{{url_for('speech')}}" class="newpat1">New Patient</a>  &nbsp;
+            <a href="{{url_for('logout')}}" class="newpat1">Logout</a>  &nbsp;
         </nav>
+
         <div class="searchbar">
+          <form action="/search" method="POST">
             <input class="search" type="text" placeholder="Search patient name.." name="search" id="search" value="">
-            <button class="button searchbut" type="submit" name="submit" id="search">Search</button>
+            <input class="button searchbut" type="submit" name="search1" value ="Search"
+            id="search">
+        </form>
         </div>
     </header>   
 </body>
