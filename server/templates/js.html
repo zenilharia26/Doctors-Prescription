@@ -4,38 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="https://fonts.googleapis.com/css?family=Comfortaa&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <title>Speech Recording</title>
 </head>
 <body>
-  <div class="prescription">
-    <p class="word">Doctor's Prescription</p>
-    <br>
-    Name:<br><input class="form-control" type="text" name="name" id="name" value="">
-    <br>
-    Symptoms:<br><input class="form-control" type="text" name="symptoms" id="symptoms" value="">
-    <br>
-    Diagnosis:<br><input class="form-control" type="text" name="diagnosis" id="diagnosis" value="">
-    <br>
-    Prescription:<br><input class="form-control" type="text" name="prescription" id="prescription" value="">
-    <br>
-    Advice:<br><input class="form-control" type="text" name="advice" id="advice" value="">
-    <br>
-    <button class="button searchbut" type="submit" name="submit" id="search">Submit</button>
-    <br>
-    <a href="search.html" style="padding-left: 5px;">Back to homepage</a>
-  </div>
-
-  
+  <div></div>
+  Name:<input class="form-control" type="text" name="name" id="name" value="">
+  <br>Symptoms:<input class="form-control" type="text" name="symptoms" id="symptoms" value="">
+  <br>Diagnosis:<input class="form-control" type="text" name="diagnosis" id="diagnosis" value="">
+  <br>Prescription:<input class="form-control" type="text" name="prescription" id="prescription" value="">
+  <br>Advice:<input class="form-control" type="text" name="advice" id="advice" value="">
+  <br>Phone: <input class="form-control" type="number" name="phone" id="phone" minlength="10" maxlength="10" value=""> 
   <script>
-    function ContainsAny(str, items)
-    {
-      for(var i in items)
-      {
+    var returnedval;
+    function setval(val) {
+      returnedval = val;
+    }
+    function loady(speechtoappend){
+    $.ajax({url: "http://localhost:5000/extract",type: 'POST',data: {data: speechtoappend,type: recognizedkeyword}, success: function(result){
+      var a=document.getElementById(recognizedkeyword);
+      a.value=result;
+    }});
+  };
+    function ContainsAny(str, items){
+      for(var i in items){
           var item = items[i];
-          if (str.includes(item))
-          {
+          if (str.includes(item)){
               //call function for keyword+
               return item;
         }
@@ -43,7 +37,7 @@
       }
       return false;
     }
-    var keywords=["name","symptoms","diagnosis","prescription","advice","submit"]
+    var keywords=["name","symptoms","diagnosis","prescription","advice","submit","phone"]
     var speechtoappend = "";
     window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     let finalTranscript = '';
@@ -58,34 +52,38 @@
         let transcript = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
           // console.log(transcript);
+
           console.log(flag);
           var x= ContainsAny(transcript,keywords); 
-          if(x && flag==0) 
-          {
+          if(x && flag==0) {
             finalTranscript += '<i style="color:red;">' + transcript + '</i>';
             recognizedkeyword = x;
-            console.log(x);  
+            console.log(x);
+            
             flag=1;
           }
           else if (flag==1 && !ContainsAny(transcript,["stop"])) {
-            function loadDoc() {
-              var xhttp = new XMLHttpRequest();
-              xhttp.onreadystatechange = function() {
-              if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText);
-                }
-              };
-              xhttp.open("GET", "http://localhost:5000/name", true);
-              xhttp.send();
-            }
+            // function loadDoc() {
+            //   var xhttp = new XMLHttpRequest();
+            //   xhttp.onreadystatechange = function() {
+            //   if (this.readyState == 4 && this.status == 200) {
+            //     console.log(this.responseText);
+            //     }
+            //   };
+            //   xhttp.open("GET", "http://localhost:5000/name", true);
+            //   xhttp.send();
+            // }
+            
             finalTranscript += '<i style="color:blue;">' + transcript + '</i>';
             speechtoappend+=transcript;
           }
-          else if (ContainsAny(transcript,["stop"])) {
-            console.log("speech to "+speechtoappend);
-            console.log("recognize"+recognizedkeyword);
-            console.log(recognizedkeyword);
-            console.log("getelement--"+document.getElementById(recognizedkeyword));
+          else if (ContainsAny(transcript,["stop"]) && flag==1) {
+            // console.log("speech to "+speechtoappend);
+            // console.log("recognize"+recognizedkeyword);
+            // console.log(recognizedkeyword);
+            // console.log("getelement--"+document.getElementById(recognizedkeyword));
+            loady(speechtoappend);
+            console.log(returnedval);
             var a=document.getElementById(recognizedkeyword);
             a.value=speechtoappend;
             speechtoappend = "";
