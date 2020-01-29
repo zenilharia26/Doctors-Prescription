@@ -80,7 +80,6 @@ def extract_names(document):
 
 @app.route('/extract', methods=['POST'])
 def extract():
-    default_msg = 'Name nai aya'
     if request.method == 'POST':
         keyword= request.form['type']
         data = request.form['data']
@@ -92,8 +91,10 @@ def extract():
             result = extract_phone_numbers(data)
         elif keyword == 'email':
             result = extract_email_addresses(data)
+        elif keyword in ('symptoms', 'diagnosis', 'prescription', 'advice'):
+            result = data
         else:
-            result = 'Gand mara'
+            result = ''
         print(result)
         return result
     return default_msg
