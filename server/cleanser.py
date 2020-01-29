@@ -77,6 +77,62 @@ def trial():
 def record():
     return render_template('js.html')
 
+@app.route('/doctorsignup',methods = ['POST', 'GET'])
+@app.route('/doctorlogin',methods = ['POST', 'GET'])
+def doctorlogin():
+	if "email" in session:
+		data=[session["email"],session["password"]]
+		return redirect(url_for('index'))
+	elif request.method=="POST":
+		if 'doctorlogin' in request.form:
+			email=request.form['email']
+			password=request.form['password']
+			cur.execute("SELECT * FROM doctors WHERE email=%s AND password=crypt(%s,password);",(email,password,))
+			data=cur.fetchone()
+			#cur.close()
+			#con.close()
+			print(data)
+			if data:
+				session["fullname"]=data[0]
+				session["phoneno"]=data[1]
+				session["email"]=data[2]
+				session["password"]=data[3]
+				session["certificate"]=data[4]
+				flash('Logged in successfully! Welcome Dr. '+session["fullname"],'success')
+				return redirect(url_for('index'))
+			else:
+				flash('Invalid username or password. Please try again ','warning')
+				return render_template('doctorlogin.html',doctorlogin='active-link')
+        
+        elif 'doctorsignup' in request.form:
+            fullname=request.form['fullname']
+            phoneno=request.form['phoneno']
+            email=request.form['email']
+            password=request.form['password']
+            certificate=request.form['certificate']
+            print(request.form)
+            cur.execute("INSERT INTO doctors(fullname,phoneno,email,password,certificate) VALUES(%s,%s,%s,crypt(%s,gen_salt('bf')),%);",(fullname,phoneno,email,password,certificate,))
+            con.commit()
+            # cur.execute("INSERT INTO regusers VALUES(%s,0);",(uname,))
+            # con.commit()
+            #cur.close()
+            #con.close()
+            flash('Registration successful! Please login to continue','success')
+            return render_template('doctorlogin.html',doctorlogin='active-link')
+	return render_template('doctorlogin.html',doctorlogin='active-link')
+
+@app.route('/logout',methods = ['POST', 'GET'])
+def logout():
+    session.pop("fullname")
+    session.pop("phoneno")
+    session.pop("email")
+    session.pop("password")
+    session.pop("certificate")
+    flash('Logged out successfully','success')
+    return redirect(url_for('index'))    
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.debug = True
+    app.run()
+    
     
