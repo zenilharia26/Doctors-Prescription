@@ -56,6 +56,14 @@
       a.value=result;
     }});
   };
+
+  function sendpdf(){
+    $.ajax({url: "http://localhost:5000/pdf",type: 'POST',data: {filey: 'Downloads/'+name+'-'+String(today.getDate()).padStart(2,'0')+'-'+String(today.getMonth()).padStart(2,'0')+'-'+today.getFullYear()+'.pdf'}, success: function(result){
+      console.log('Sent');
+      console.log(result);
+      passed.output('datauri');
+    }});
+  };
     function ContainsAny(str, items){
       for(var i in items){
           var item = items[i];
@@ -193,7 +201,39 @@
     doc.text(23, 202, prescription);
     doc.text(23, 222, advice);
       // doc.output('dataurlnewwindow');
-     doc.save('test.pdf');
+     //doc.save('test.pdf');
+    var today = new Date();
+    var pdf = doc.output('blob');
+    
+    var data = new FormData();
+    data.append('data' , pdf);
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (this.readyState == 4) {
+        if (this.status !== 200) {
+          // handle error
+        }
+      }
+    }
+
+    xhr.open('POST', '/pdf', true);
+    xhr.send(data);
+    
+    var data = new FormData();
+    data.append('data' , pdf);
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (this.readyState == 4) {
+        if (this.status !== 200) {
+          // handle error
+        }
+      }
+    }
+
+    xhr.open('POST', '/pdf', true);
+    xhr.send(data);
 });
 
   </script>

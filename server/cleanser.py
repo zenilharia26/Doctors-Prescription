@@ -1,3 +1,4 @@
+import os
 from flask import Flask,render_template,request,redirect,url_for,session,flash
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
@@ -5,7 +6,9 @@ import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:1234@localhost/doctordesc'
+from virtru_tdf3_python import Client, Policy, EncryptFileParam, Protocol
+import yagmail
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:1999@localhost/doctordesc'
 db=SQLAlchemy(app)
 
 class docregister(db.Model):
@@ -92,8 +95,10 @@ def extract():
             result = extract_phone_numbers(data)
         elif keyword == 'email':
             result = extract_email_addresses(data)
+        elif keyword in ('prescription','diagnosis','advice'):
+            result = data
         else:
-            result = 'Gand mara'
+            result = ''
         print(result)
         return result
     return default_msg
@@ -185,10 +190,39 @@ def search():
     if request.method=='POST':
 
         ser=form.request.get('search')
-        find=patients.query.filter(patients.name.ilike(ser)).all()
+        find=patients.query.filter(patient.name.contains(ser)).all()
         for row in find:
-            print(row)
+            print(row.name)
+    return render_template('search.html',name=session['name'])
 
+@app.route('/pdf',methods=['POST'])
+def getpdf():
+    if request.method=='POST':
+        print('hii')
+        print(request.files)
+        latestfile = request.files['data']
+        latestfile.save(os.path.join(app.root_path, 'static', 'bg.pdf'))
+        client = Client(owner = "vatsal.palan@somaiya.edu",
+                app_id = "a484aecf-af64-4538-a69f-06543b5996b4")
+        policy = Policy()
+        policy.share_with_users(["aditya.sehgal@somaiya.edu",'zenil.haria@somaiya.edu','mankadarnav@gmail.com'])
+        client.set_protocol(Protocol.Zip)
+        param = EncryptFileParam(in_file_path=os.path.join(app.root_path, 'static', 'bg.pdf'),
+                         out_file_path=os.path.join(app.root_path, 'static',  'bg.pdf.tdf3'))
+        param.set_policy(policy)
+        client.encrypt_file(encrypt_file_param=param)
+        
+        yag = yagmail.SMTP("vatsal.palan@somaiya.edu", "Vats@506")
+        pathy= str(os.path.join(app.root_path, 'static',  'bg.pdf.tdf3'))
+        contents = [pathy,'To decrypt the file visit the provided url','https://demos.developer.virtru.com/dd/index.html '
+            
+        ]
+        yag.send("aditya.sehgal@somaiya.edu", "Test Email", contents)
+        yag.send("zenil.haria@somaiya.edu", "Test Email", contents)
+        yag.send("mankadarnav@gmail.com", "Test Email", contents)
+
+        return 'hi'
+    return 'hi'
 if __name__ == '__main__':
     app.debug = True
     app.secret_key="384tyhhfhr"
