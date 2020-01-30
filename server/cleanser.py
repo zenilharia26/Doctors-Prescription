@@ -1,6 +1,7 @@
 import os
 from flask import Flask,render_template,request,redirect,url_for,session,flash
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 import re
 import nltk
@@ -132,9 +133,8 @@ def dashboard():
 @app.route('/register',methods=['POST'])
 def adding():
     if request.method=='POST':
-         
-         user=docregister(request.form.get('name'),request.form.get('email'),request.form.get('password'),request.form.get('contact'))
-         print(request.form)    
+         pw_hash = generate_password_hash(request.form.get('password'))
+         user=docregister(request.form.get('name'),request.form.get('email'),pw_hash,request.form.get('contact'))
          db.session.add(user)   
          db.session.commit()
          return(redirect(url_for("loginuser")))
@@ -153,12 +153,12 @@ def validation():
             passwords=request.form.get('password')
             user=docregister.query.filter_by(email=emails).first()
             if user:
-                if user.password==passwords:
+                if check_password_hash(user.password, passwords):
                     session['name']=user.name
                     print(session['name'])  
                     return render_template('search.html',name=session['name'])
-            flash("username or password not found","danger")
-            return (redirect(url_for('loginuser')))        
+            errors="username or password not found"
+            return render_template('register.html',error=errors) 
              
 @app.route('/logout')
 def logout():
