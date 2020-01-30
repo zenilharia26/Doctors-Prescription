@@ -23,7 +23,9 @@
                     <input type="number" name="contact" placeholder="Enter phone no." required/>
                     
                     <input value="SignUp" name="submit" type="submit"/>
+                    
                 </form>
+                
             </div>
             <div class="form-container sign-in-container">
                 <form action="/validate" method="POST">
@@ -31,7 +33,11 @@
                     <input type="email" name="email" placeholder="Enter email" required/>
                     <input type="password" name="password" placeholder="Enter password" required />
                     <input value="SignIn" name="submit" type="submit"/>
+                  {% if error %}
+                     <p>{{ error }}</p>
+                    {% endif %}
                 </form>
+
             </div>
             <div class="overlay-container">
                 <div class="overlay">

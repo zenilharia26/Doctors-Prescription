@@ -1,15 +1,17 @@
-import os
 from flask import Flask,render_template,request,redirect,url_for,session,flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from virtru_tdf3_python import Client,Policy,EncryptFileParam,Protocol
+import yagmail
+import os
+
 app = Flask(__name__)
+
 import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
-from virtru_tdf3_python import Client, Policy, EncryptFileParam, Protocol
-import yagmail
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:1999@localhost/doctordesc'
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:1234@localhost/doctordesc'
 db=SQLAlchemy(app)
 
 class docregister(db.Model):
@@ -18,6 +20,7 @@ class docregister(db.Model):
     email=db.Column(db.String(100),unique=True)
     password=db.Column(db.String(100),unique=True)
     contact=db.Column(db.String(100),unique=True)
+
 
 
     def __init__(self,name,email,password,contact):
@@ -96,8 +99,8 @@ def extract():
             result = extract_phone_numbers(data)
         elif keyword == 'email':
             result = extract_email_addresses(data)
-        elif keyword in ('prescription','diagnosis','advice'):
-            result = data
+        elif keyword in ('prescription','diagnosis','advice','symptoms'):
+            result=data    
         else:
             result = ''
         print(result)
@@ -135,16 +138,18 @@ def adding():
     if request.method=='POST':
          pw_hash = generate_password_hash(request.form.get('password'))
          user=docregister(request.form.get('name'),request.form.get('email'),pw_hash,request.form.get('contact'))
+            
          db.session.add(user)   
          db.session.commit()
          return(redirect(url_for("loginuser")))
 
 @app.route('/login')
 def loginuser():
-    if session:
+    if 'name' in session:
         return render_template("search.html",name=session['name'])
     else:
-        return render_template("login.html")        
+        return render_template("register.html") 
+
 
 @app.route('/validate',methods=['POST'])
 def validation():
@@ -155,10 +160,12 @@ def validation():
             if user:
                 if check_password_hash(user.password, passwords):
                     session['name']=user.name
-                    print(session['name'])  
+                    
                     return render_template('search.html',name=session['name'])
             errors="username or password not found"
             return render_template('register.html',error=errors) 
+
+
              
 @app.route('/logout')
 def logout():
@@ -174,11 +181,11 @@ def speech():
        return (redirect(url_for('loginuser')))     
 @app.route('/addpatient',methods=['POST'])
 def addpatients():
-    if  session:
+    if  'name' in session:
         if request.method=='POST':
              user1=patient(request.form.get('name'),request.form.get('symptoms'),request.form.get('diagnosis'),request.form.get('prescription'),session['name'])
              print(request.form.get('symptoms'))
-             print(session['name'])
+             
              print(request.form.get('diagnosis'))
              db.session.add(user1)   
              db.session.commit() 
@@ -189,19 +196,17 @@ def addpatients():
 def search():
     if request.method=='POST':
 
-        ser=form.request.get('search')
-        find=patients.query.filter(patient.name.contains(ser)).all()
-        for row in find:
-            print(row.name)
-    return render_template('search.html',name=session['name'])
+        ser=request.form.get('search')
+        find=patient.query.filter(patient.name.contains(ser)).filter(patient.docpres==session['name']).all()
+        return render_template('find.html',row=find)
 
+    return render_template('search.html',name=session['name'])      
 @app.route('/pdf',methods=['POST'])
 def getpdf():
     if request.method=='POST':
-        print('hii')
         print(request.files)
-        latestfile = request.files['data']
-        latestfile.save(os.path.join(app.root_path, 'static', 'bg.pdf'))
+        latestfile=request.files['data']
+        latestfile.save(os.path.join(app.root_path,'static','bg.pdf'))
         client = Client(owner = "vatsal.palan@somaiya.edu",
                 app_id = "a484aecf-af64-4538-a69f-06543b5996b4")
         policy = Policy()
@@ -222,7 +227,8 @@ def getpdf():
         yag.send("mankadarnav@gmail.com", "Test Email", contents)
 
         return 'hi'
-    return 'hi'
+    return 'hi'      
+
 if __name__ == '__main__':
     app.debug = True
     app.secret_key="384tyhhfhr"

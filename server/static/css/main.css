@@ -1,9 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Comfortaa&display=swap');
 *{
-    font-family: 'Comfortaa', cursive;
+    
     padding: 0;
     margin: 0;
     font-size: 20px;
     box-sizing:border-box;
+    font-family: 'Comfortaa', cursive;
     background-image: url('background.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -12,7 +14,9 @@
 .header{
     padding: 20px;
 }
-
+.body{
+    background-color: antiquewhite;
+}
 .header::after{
     content:" ";
     clear: both;
@@ -22,20 +26,20 @@
 .line{
     color: black;
     padding-left: 600px;
-    padding-top: 300px;
+    padding-top: 250px;
     font-size: 80px;
 }
 .line2{
     color: black;
     padding-left: 450px;
-    padding-top: 100px;
+    padding-top: 200px;
     font-size: 70px;
 }
 
 .searchbar{
     padding-top: 15px;
     float: left;
-    padding-left: 425px;
+    padding-left: 320px;
 }
 
 input[type=text] {
@@ -121,7 +125,7 @@ input[type=email] {
 .right_tokens1{
     padding-top: 24px;
     float: right;
-    padding-right: 320px;
+    padding-right: 250px;
 }
 .newpat{
     font-size: 30px;
