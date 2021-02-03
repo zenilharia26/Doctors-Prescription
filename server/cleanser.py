@@ -208,7 +208,7 @@ def getpdf():
         latestfile=request.files['data']
         latestfile.save(os.path.join(app.root_path,'static','bg.pdf'))
         client = Client(owner = "vatsal.palan@somaiya.edu",
-                app_id = "a484aecf-af64-4538-a69f-06543b5996b4")
+                app_id = "-- Enter API Key --")
         policy = Policy()
         policy.share_with_users(["aditya.sehgal@somaiya.edu",'zenil.haria@somaiya.edu','mankadarnav@gmail.com'])
         client.set_protocol(Protocol.Zip)
